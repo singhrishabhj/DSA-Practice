@@ -41,7 +41,7 @@ class SimpleQueue {
 }
 
 // Example usage of the SimpleQueue class
-public class Main {
+public class ArrayQueue {
     public static void main(String[] args) {
         SimpleQueue queue = new SimpleQueue(); // Create a new queue
 
