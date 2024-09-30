@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Random;
 
 // Class representing a simple queue
 class SimpleQueue {
@@ -10,7 +11,7 @@ class SimpleQueue {
     }
 
     // Method to add an element to the end of the queue
-    public void enqueue(int value) {
+    public void enqueue(int value) throws QueueIsFull {
         elements.add(value); // Add the element to the end
     }
 
@@ -42,28 +43,44 @@ class SimpleQueue {
 
 // Example usage of the SimpleQueue class
 public class ArrayQueue {
-    public static void main(String[] args) {
+    public static void automatedTest(SimpleQueue queue, int capacity) throws Exception {
+        Random random = new Random();
+        int size = 0;
+        for (int i = 1; i <= capacity * 2; i++) {
+            if (random.nextBoolean()) {
+                try {
+                    queue.enqueue(i);
+                } catch (QueueIsFull exception) {
+                    break;
+                }
+                size++;
+            }
+        }
+
+
+        Integer lastSeen = Integer.MIN_VALUE;
+        while (!queue.isEmpty()) {
+            Integer element = queue.dequeue();
+
+            if (element < lastSeen) {
+                throw new RuntimeException("Test failed: ordering");
+            }
+            lastSeen = element;
+            System.out.println(element);
+            size--;
+        }
+
+        if (size != 0) {
+            throw new RuntimeException("Test failed : size mismatched");
+        }
+    }
+    public static void main(String[] args) throws Exception {
         SimpleQueue queue = new SimpleQueue(); // Create a new queue
+        long start = System.currentTimeMillis();
 
-        // Add elements to the queue
-        queue.enqueue(10);
-        queue.enqueue(20);
-        queue.enqueue(30);
+        automatedTest(queue, 100000);
+        System.out.println("Time taken = " + (System.currentTimeMillis() - start));
 
-        // Remove and print the front element
-        System.out.println("Dequeue: " + queue.dequeue()); // Output: 10
 
-        // Print the front element
-        System.out.println("Front: " + queue.front()); // Output: 20
-
-        // Check if the queue is empty
-        System.out.println("Is Queue Empty: " + queue.isEmpty()); // Output: false
-
-        // Dequeue remaining elements
-        queue.dequeue(); // Removes 20
-        queue.dequeue(); // Removes 30
-
-        // Check if the queue is empty after removing all elements
-        System.out.println("Is Queue Empty: " + queue.isEmpty()); // Output: true
     }
 }

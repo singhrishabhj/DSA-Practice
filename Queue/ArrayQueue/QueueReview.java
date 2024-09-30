@@ -116,8 +116,10 @@ public class QueueReview {
     }
 
     public static void main(String[] args) throws Exception {
-        int capacity = 1000;
+        int capacity = 100000;
         MyIntegerArrayQueue queue = new MyIntegerArrayQueue(capacity);
+        long start = System.currentTimeMillis();
         automatedTest(queue, capacity);
+        System.out.println("Time taken = " + (System.currentTimeMillis() - start));
     }
 }

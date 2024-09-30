@@ -1,3 +1,8 @@
+import java.util.Random;
+
+class QueueIsEmpty extends Exception {}
+class QueueIsFull extends Exception {}
+
 class CircularArrayQueue {
     private int[] queue;
     private int front;
@@ -15,10 +20,10 @@ class CircularArrayQueue {
     }
 
     // Add an element to the end of the queue
-    public void enqueue(int x) {
+    public void enqueue(int x) throws QueueIsFull {
         if (isFull()) {
             System.out.println("Queue is full");
-            return;
+            throw new QueueIsFull();
         }
 
         // Move rear pointer circularly
@@ -77,16 +82,15 @@ class CircularArrayQueue {
 }
 
 // Example usage
-public class Main {
-    public static void main(String[] args) {
-        CircularArrayQueue queue = new CircularArrayQueue(5); // Queue with a capacity of 5
-        
+public class CircularArrayQueueMain {
+
+    public static void manualTest(CircularArrayQueue queue, int capacity) throws Exception {
         queue.enqueue(10);
         queue.enqueue(20);
         queue.enqueue(30);
         queue.enqueue(40);
         queue.enqueue(50);
-        
+
         System.out.println("Dequeue: " + queue.dequeue());  // Output: 10
         System.out.println("Front: " + queue.front());      // Output: 20
 
@@ -99,5 +103,45 @@ public class Main {
         System.out.println("Dequeue: " + queue.dequeue());  // Output: 60
 
         System.out.println("Is Queue Empty: " + queue.isEmpty());  // Output: true
+    }
+
+    public static void automatedTest(CircularArrayQueue queue, int capacity) throws Exception {
+        Random random = new Random();
+        int size = 0;
+        for (int i = 1; i <= capacity * 2; i++) {
+            if (random.nextBoolean()) {
+                try {
+                    queue.enqueue(i);
+                } catch (QueueIsFull exception) {
+                    break;
+                }
+                size++;
+            }
+        }
+
+
+        Integer lastSeen = Integer.MIN_VALUE;
+        while (!queue.isEmpty()) {
+            Integer element = queue.dequeue();
+
+            if (element < lastSeen) {
+                throw new RuntimeException("Test failed: ordering");
+            }
+            lastSeen = element;
+            System.out.println(element);
+            size--;
+        }
+
+        if (size != 0) {
+            throw new RuntimeException("Test failed : size mismatched");
+        }
+    }
+    public static void main(String[] args) throws Exception {
+        int capacity = 100000;
+        CircularArrayQueue queue = new CircularArrayQueue(capacity); // Queue with a capacity of 5
+        long start = System.currentTimeMillis();
+        automatedTest(queue, capacity);
+        System.out.println("Time taken = " + (System.currentTimeMillis() - start));
+
     }
 }
